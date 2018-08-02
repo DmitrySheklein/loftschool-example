@@ -8,7 +8,7 @@
  */
 function forEach(array, fn) {
     for (var i = 0;i < array.length; i++) {
-        fn(array[i], i , array)
+        fn(array[i], i, array)
     }
 }
 
@@ -20,9 +20,11 @@ function forEach(array, fn) {
  */
 function map(array, fn) {
     var newArr = [];
+
     for ( var i = 0; i < array.length; i++) {        
         newArr.push(fn(array[i], i, array))
     }
+
     return newArr;
 }
 
@@ -32,19 +34,28 @@ function map(array, fn) {
  Напишите аналог встроенного метода reduce для работы с массивами
  Посмотрите как работает reduce и повторите это поведение для массива, который будет передан в параметре array
  */
+
 function reduce(array, fn, initial) {
     var result;
-    for (var i = 0; i < array.length; i++) {
-        if (i === 0) {          
-            if(typeof initial == 'undefined') {
-                result = fn(array[i], array[i], i, array); 
+
+    if (typeof initial == 'undefined') {
+        for (let i = 1; i < array.length; i++) {   
+            if (i === 1) { 
+                result = fn(array[0], array[i], i, array);
             } else {
-                result = fn(initial, array[i], i, array);
+                result = fn(result, array[i], i, array);
             }
-        } else {
-            result = fn(result, array[i], i, array)
-        } 
+        }
+    } else {
+        for (let i = 0; i < array.length; i++) {
+            if (i === 0) {
+                result = fn(initial, array[i], i, array);
+            } else {
+                result = fn(result, array[i], i, array);
+            }
+        }
     }
+
     return result;
 }
 
@@ -58,9 +69,13 @@ function reduce(array, fn, initial) {
  */
 function upperProps(obj) {
     var arr = [];
-    for(let key in obj) {
-        arr.push(key.toUpperCase())
+
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            arr.push(key.toUpperCase())
+        }
     }
+
     return arr;
 }
 
@@ -71,6 +86,50 @@ function upperProps(obj) {
  Посмотрите как работает slice и повторите это поведение для массива, который будет передан в параметре array
  */
 function slice(array, from, to) {
+    if (typeof from == 'undefined' && typeof to == 'undefined') {
+        let newArr = [];
+
+        for (let i = 0; i < array.length; i++) {
+            newArr.push(array[i]);            
+        }
+
+        return newArr;
+    }
+
+    if (typeof from !== 'undefined' && typeof to == 'undefined') {
+        let newArr = [];
+        
+        if (from < 0) {
+            from = Math.abs(from);
+            if (from >= array.length) {
+                from = array.length;
+            }
+            for (let i = Math.abs(from), arrLength = array.length - 1; i > 0; i--) {
+                newArr.push(array[arrLength]);
+                arrLength--;
+            }
+
+        } else {
+            for (let i = from; i < array.length; i++) {
+                newArr.push(array[i]);
+            }
+        }
+        
+        return newArr;
+    }
+    if (typeof from !== 'undefined' && typeof to !== 'undefined') {
+        let newArr = [];
+
+        if (to > array.length) {
+            to = array.length;
+        }
+        for (let i = from; i < to; i++) {
+            newArr.push(array[i]);
+        }
+        
+        return newArr;
+    }
+
 }
 
 /*
