@@ -96,32 +96,34 @@ function slice(array, from, to) {
         return newArr;
     }
 
-    if (typeof from !== 'undefined' && typeof to == 'undefined') {
+    if (typeof from !== 'undefined' && typeof to == 'undefined') {        
         let newArr = [];
         
-        if (from < 0) {
-            from = Math.abs(from);
-            if (from >= array.length) {
-                from = array.length;
+        if (from < 0) {         
+            if (from < -array.length) {
+                from = 0;
+            } else {
+                from = from + array.length;
             }
-            for (let i = Math.abs(from), arrLength = array.length - 1; i > 0; i--) {
-                newArr.push(array[arrLength]);
-                arrLength--;
-            }
-
-        } else {
-            for (let i = from; i < array.length; i++) {
-                newArr.push(array[i]);
-            }
+        }
+        
+        for (let i = from; i < array.length; i++) {
+            newArr.push(array[i]);
         }
         
         return newArr;
     }
-    if (typeof from !== 'undefined' && typeof to !== 'undefined') {
+    if (typeof from !== 'undefined' && typeof to !== 'undefined') {       
         let newArr = [];
 
         if (to > array.length) {
             to = array.length;
+        }
+        if (to < 0) {
+            to = to + array.length;
+        }
+        if (from < 0 ) {
+            from = 0;
         }
         for (let i = from; i < to; i++) {
             newArr.push(array[i]);
