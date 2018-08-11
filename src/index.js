@@ -121,20 +121,27 @@ function deleteTextNodes(where) {
  Так же будьте внимательны при удалении узлов, т.к. можно получить неожиданное поведение при переборе узлов
 
  Пример:
-   После выполнения функции, дерево <span> <div> <b>привет</b> </div> <p>loftchool</p> !!!</span>
+   После выполнения функции, дерево
+   <span>
+    <div> <b>привет</b> </div>
+    <p>loftchool</p> !!!
+   </span>
    должно быть преобразовано в <span><div><b></b></div><p></p></span>
  */
 function deleteTextNodesRecursive(where) {
     if (!where.childNodes.length) {                   
         return;
     } 
-    for (let child of where.childNodes) {                    
+    for (let i = 0 ; i < where.childNodes.length; i++) { 
+      let child = where.childNodes[i];
         if (child.nodeType === 3) {
             child.parentNode.removeChild(child);
+            i--;
         } else {
             deleteTextNodesRecursive(child)
         }
     }    
+      
 }
 
 /*
@@ -164,21 +171,24 @@ function collectDOMStat(root) {
         texts: 0
     }
 
-    function setStats(child){
-        if(child.nodeType === 3) {
-            stats.texts++
-        } else if (child.nodeType === 1) {
-            stats.tags[child.tagName] = child.tagName in stats.tags ? stats.tags[child.tagName] + 1 : 1;
-            [...child.classList].forEach(function(item){
-                stats.classes[item] = item in stats.classes ? stats.classes[item] + 1 : 1;
-            })
-                                        
-        }                    
+    function setStats(root){ 
+        for(let child of root.childNodes) {
+            if(child.nodeType === 3) {
+                stats.texts++
+            } else if (child.nodeType === 1) {
+                child.tagName in stats.tags ? stats.tags[child.tagName]++ : 1;
+                [...child.classList].forEach(function(item){
+                    item in stats.classes ? stats.classes[item]++ + 1 : 1;
+                })
+                setStats(child);
+            }             
+                                 
+        }
     }          
 
-    for(let child of root.childNodes) {
-        setStats(child)                       
-    }
+    setStats(root)
+    
+    return stats;
 }
 
 /*
