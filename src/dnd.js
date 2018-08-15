@@ -43,6 +43,10 @@ function createDiv() {
     div.style.left = `${randomLeft}px`;
     div.style.top = `${randomTop}px`;
 
+    if (parseInt(div.style.width) + parseInt(div.style.left) > document.documentElement.clientWidth) {
+        div.style.left = 0;
+    }
+
     div.style.position = 'absolute';
     var randomOpacity = Math.random() * 1;
     var randomColor = Math.random() * 255 + 1;
@@ -61,6 +65,60 @@ function createDiv() {
    addListeners(newDiv);
  */
 function addListeners(target) {
+    target.addEventListener('mousedown', function (evt) {       
+        evt.preventDefault()
+        
+        var startCoordinates = {
+            x: evt.clientX,
+            y: evt.clientY
+        };
+
+        var onMouseMove = function (moveEvt) {
+            moveEvt.preventDefault();
+
+            var limit = {
+                top: document.documentElement.clientTop,
+                left: document.documentElement.clientLeft,
+                right: document.documentElement.clientWidth,
+                bottom: document.documentElement.clientHeight
+            };
+            
+            var shift = {
+                x: startCoordinates.x - moveEvt.clientX,
+                y: startCoordinates.y - moveEvt.clientY
+            };
+
+            startCoordinates = {
+                x: moveEvt.clientX,
+                y: moveEvt.clientY
+            };
+
+            target.style.top = target.offsetTop - shift.y + 'px';
+            target.style.left = target.offsetLeft - shift.x + 'px';      
+            
+            if (target.offsetTop <= limit.top) {
+                target.style.top = `${limit.top}px`
+            } else if (target.offsetTop + target.offsetHeight > limit.bottom) {
+                target.style.top = limit.bottom - target.offsetHeight + 'px';
+            }
+
+            if (target.offsetLeft <= limit.left) {
+                target.style.left = `${limit.left}px`
+            } else if (target.offsetLeft + target.offsetWidth > limit.right) {
+                target.style.left = limit.right - target.offsetWidth + 'px'
+            }
+        }  
+
+        var onMouseUp = function (upEvt) {
+            upEvt.preventDefault();
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        };
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);        
+                        
+    })
 }
 
 let addDivButton = homeworkContainer.querySelector('#addDiv');
