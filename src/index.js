@@ -134,6 +134,7 @@ function deleteTextNodesRecursive(where) {
     } 
     for (let i = 0 ; i < where.childNodes.length; i++) { 
       let child = where.childNodes[i];
+
         if (child.nodeType === 3) {
             child.parentNode.removeChild(child);
             i--;
@@ -176,9 +177,17 @@ function collectDOMStat(root) {
             if (child.nodeType === 3) {
                 stats.texts++
             } else if (child.nodeType === 1) {
-                stats.tags[child.tagName] = (child.tagName in stats.tags) ? stats.tags[child.tagName] += 1 : 1;
+                if (stats.tags[child.tagName]) {
+                    stats.tags[child.tagName]++ 
+                } else {
+                    stats.tags[child.tagName] = 1
+                }
                 [...child.classList].forEach((item)=> {
-                    stats.classes[item] = (item in stats.classes) ? stats.classes[item] += 1 : 1;
+                    if (stats.classes[item]) {
+                        stats.classes[item]++
+                    } else {
+                        stats.classes[item] = 1
+                    }
                 })
                 setStats(child);
             }
@@ -223,18 +232,26 @@ function collectDOMStat(root) {
    }
  */
 function observeChildNodes(where, fn) {
-    var observer = new MutationObserver(function(mutations) {
+    let observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
-            var infoObj = {}
-            
-            infoObj.type = (mutation.addedNodes.length > 0) ? 'insert' : 'remove';
-            infoObj.nodes = (mutation.addedNodes.length > 0) ? [...mutation.addedNodes] : [...mutation.removedNodes];
+            let infoObj = {
+                type: null,
+                nodes: null
+            }
+
+            if (mutation.addedNodes.length) {
+                infoObj.type = 'insert';
+                infoObj.nodes = [...mutation.addedNodes]
+            } else if (mutation.removedNodes.length) {
+                infoObj.type = 'remove';
+                infoObj.nodes = [...mutation.removedNodes];
+            }
            
             fn(infoObj)
         });    
     });
     
-    var config = { attributes: true, childList: true, characterData: true, subtree: true };
+    let config = { attributes: true, childList: true, characterData: true, subtree: true };
     
     observer.observe(where, config);
 }
