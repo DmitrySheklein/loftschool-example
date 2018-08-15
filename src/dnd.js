@@ -68,22 +68,22 @@ function addListeners(target) {
     target.addEventListener('mousedown', function (evt) {       
         evt.preventDefault()
         
-        var startCoordinates = {
+        let startCoordinates = {
             x: evt.clientX,
             y: evt.clientY
         };
 
-        var onMouseMove = function (moveEvt) {
+        let onMouseMove = function (moveEvt) {
             moveEvt.preventDefault();
 
-            var limit = {
+            let limit = {
                 top: document.documentElement.clientTop,
                 left: document.documentElement.clientLeft,
                 right: document.documentElement.clientWidth,
                 bottom: document.documentElement.clientHeight
             };
             
-            var shift = {
+            let shift = {
                 x: startCoordinates.x - moveEvt.clientX,
                 y: startCoordinates.y - moveEvt.clientY
             };
@@ -99,17 +99,17 @@ function addListeners(target) {
             if (target.offsetTop <= limit.top) {
                 target.style.top = `${limit.top}px`
             } else if (target.offsetTop + target.offsetHeight > limit.bottom) {
-                target.style.top = limit.bottom - target.offsetHeight + 'px';
+                target.style.top = `${limit.bottom - target.offsetHeight}px`;
             }
 
             if (target.offsetLeft <= limit.left) {
                 target.style.left = `${limit.left}px`
             } else if (target.offsetLeft + target.offsetWidth > limit.right) {
-                target.style.left = limit.right - target.offsetWidth + 'px'
+                target.style.left = `${limit.right - target.offsetWidth}px`
             }
         }  
 
-        var onMouseUp = function (upEvt) {
+        let onMouseUp = function (upEvt) {
             upEvt.preventDefault();
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
