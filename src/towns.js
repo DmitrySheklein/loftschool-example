@@ -123,8 +123,16 @@ filterInput.addEventListener('keyup', function(evt) {
     if (!value) {
         return false;
     }
+    
+    for (let child of filterResult.children) {
+        child.remove()
+    }
+    let lastTimeout;
 
-    setTimeout(() => {
+    if (lastTimeout) {
+        clearTimeout(lastTimeout)
+    }
+    lastTimeout = setTimeout(() => {
         let cityFragment = document.createDocumentFragment()
 
         for (let city of filterCities) {
