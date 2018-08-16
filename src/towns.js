@@ -37,8 +37,58 @@ const homeworkContainer = document.querySelector('#homework-container');
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
  */
 function loadTowns() {
-}
+    return new Promise((resolve, reject) => {
+        const URL_LOAD = 'https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json';
+        let xhr = new XMLHttpRequest();
 
+        xhr.responseType = 'json';
+
+        xhr.addEventListener('load', function () {
+            if (xhr.status > 400) {
+                loadingBlock.innerHTML = 'Не удалось загрузить города';
+                createBtn();
+                reject();
+
+                return;
+            }           
+            loadingBlock.style.display = 'none'
+            filterBlock.style.display = 'block'
+            resolve(xhr.response.sort(function (a, b) {
+                if (a.name > b.name) {
+                    return 1;
+                }
+                if (a.name < b.name) {
+                    return -1;
+                }
+
+                return 0;
+            }));
+        });
+
+        xhr.addEventListener('error', () => reject());        
+        xhr.addEventListener('abort', () => reject());        
+
+        xhr.open('GET', URL_LOAD);
+        xhr.send(); 
+        
+        function createBtn() {
+            if (document.getElementById('replay')) {
+                return;
+            }
+            let btn = document.createElement('BUTTON');
+
+            btn.id = 'replay'
+            btn.innerHTML = 'Повторить'
+            btn.addEventListener('click', loadTowns)
+            homeworkContainer.appendChild(btn);
+
+            return;            
+        }
+    })
+}
+loadTowns().then(res => {
+    cities = res;
+})
 /*
  Функция должна проверять встречается ли подстрока chunk в строке full
  Проверка должна происходить без учета регистра символов
@@ -50,7 +100,8 @@ function loadTowns() {
    isMatching('Moscow', 'SCO') // true
    isMatching('Moscow', 'Moscov') // false
  */
-function isMatching(full, chunk) {
+function isMatching(full, chunk) {  
+    return (full.toLowerCase().indexOf(chunk.toLowerCase()) !== -1) ? true : false;
 }
 
 /* Блок с надписью "Загрузка" */
@@ -62,8 +113,31 @@ const filterInput = homeworkContainer.querySelector('#filter-input');
 /* Блок с результатами поиска */
 const filterResult = homeworkContainer.querySelector('#filter-result');
 
-filterInput.addEventListener('keyup', function() {
+let cities;
+
+filterInput.addEventListener('keyup', function(evt) {
     // это обработчик нажатия кливиш в текстовом поле
+    let value = evt.target.value;
+    let filterCities = cities.filter((item) => isMatching(item.name, value))
+
+    if (!value) {
+        return false;
+    }
+
+    setTimeout(() => {
+        let cityFragment = document.createDocumentFragment()
+
+        for (let city of filterCities) {
+            let divText = document.createElement('div')
+
+            divText.innerHTML = city.name;
+
+            cityFragment.appendChild(divText)
+        }
+
+        filterResult.appendChild(cityFragment)        
+    }, 1000);
+    
 });
 
 export {
