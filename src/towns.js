@@ -36,6 +36,7 @@ const homeworkContainer = document.querySelector('#homework-container');
  Массив городов пожно получить отправив асинхронный запрос по адресу
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
  */
+
 function loadTowns() {
     return new Promise((resolve, reject) => {
         const URL_LOAD = 'https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json';
@@ -49,7 +50,16 @@ function loadTowns() {
 
                 return;
             }
-            resolve(xhr.response);
+            resolve(xhr.response.sort(function (a, b) {
+                if (a.name > b.name) {
+                    return 1;
+                }
+                if (a.name < b.name) {
+                    return -1;
+                }
+
+                return 0;
+            }));
         });
 
         xhr.addEventListener('error', () => reject());        
@@ -61,16 +71,6 @@ function loadTowns() {
 }
 loadTowns().then(res => {
     cities = res;
-    cities.sort(function (a, b) {
-        if (a.name > b.name) {
-            return 1;
-        }
-        if (a.name < b.name) {
-            return -1;
-        }
-
-        return 0;
-    })
 
     loadingBlock.style.display = 'none'
     filterBlock.style.display = 'block'    
@@ -85,12 +85,16 @@ loadTowns().then(res => {
 
         btn.id = 'replay'
         btn.innerHTML = 'Повторить'
-        btn.addEventListener('click', loadTowns)
+        btn.addEventListener('click', loadTownsInit)
         homeworkContainer.appendChild(btn);
 
         return;
     }    
-})
+})  
+function loadTownsInit() {  
+    loadTowns();
+}
+loadTownsInit();
 /*
  Функция должна проверять встречается ли подстрока chunk в строке full
  Проверка должна происходить без учета регистра символов
