@@ -48,9 +48,7 @@ function loadTowns() {
                 reject();
 
                 return;
-            }           
-            loadingBlock.style.display = 'none'
-            filterBlock.style.display = 'block'
+            }
             resolve(xhr.response);
         });
 
@@ -73,6 +71,9 @@ loadTowns().then(res => {
 
         return 0;
     })
+
+    loadingBlock.style.display = 'none'
+    filterBlock.style.display = 'block'    
 }).catch(()=>{
     loadingBlock.innerHTML = 'Не удалось загрузить города';
     createBtn();
