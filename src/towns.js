@@ -122,12 +122,9 @@ filterInput.addEventListener('keyup', function(evt) {
     let value = evt.target.value;
     let filterCities = cities.filter((item) => isMatching(item.name, value))
 
+    filterResult.innerHTML = '';
     if (!value) {
         return false;
-    }
-    
-    for (let child of filterResult.children) {
-        child.remove()
     }
 
     let cityFragment = document.createDocumentFragment()
