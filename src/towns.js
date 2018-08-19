@@ -45,24 +45,13 @@ function loadTowns() {
 
         xhr.addEventListener('load', function () {
             if (xhr.status > 400) {
-                loadingBlock.innerHTML = 'Не удалось загрузить города';
-                createBtn();
                 reject();
 
                 return;
             }           
             loadingBlock.style.display = 'none'
             filterBlock.style.display = 'block'
-            resolve(xhr.response.sort(function (a, b) {
-                if (a.name > b.name) {
-                    return 1;
-                }
-                if (a.name < b.name) {
-                    return -1;
-                }
-
-                return 0;
-            }));
+            resolve(xhr.response);
         });
 
         xhr.addEventListener('error', () => reject());        
@@ -70,24 +59,36 @@ function loadTowns() {
 
         xhr.open('GET', URL_LOAD);
         xhr.send(); 
-        
-        function createBtn() {
-            if (document.getElementById('replay')) {
-                return;
-            }
-            let btn = document.createElement('BUTTON');
-
-            btn.id = 'replay'
-            btn.innerHTML = 'Повторить'
-            btn.addEventListener('click', loadTowns)
-            homeworkContainer.appendChild(btn);
-
-            return;            
-        }
     })
 }
 loadTowns().then(res => {
     cities = res;
+    cities.sort(function (a, b) {
+        if (a.name > b.name) {
+            return 1;
+        }
+        if (a.name < b.name) {
+            return -1;
+        }
+
+        return 0;
+    })
+}).catch(()=>{
+    loadingBlock.innerHTML = 'Не удалось загрузить города';
+    createBtn();
+    function createBtn() {
+        if (document.getElementById('replay')) {
+            return;
+        }
+        let btn = document.createElement('BUTTON');
+
+        btn.id = 'replay'
+        btn.innerHTML = 'Повторить'
+        btn.addEventListener('click', loadTowns)
+        homeworkContainer.appendChild(btn);
+
+        return;
+    }    
 })
 /*
  Функция должна проверять встречается ли подстрока chunk в строке full
@@ -127,25 +128,17 @@ filterInput.addEventListener('keyup', function(evt) {
     for (let child of filterResult.children) {
         child.remove()
     }
-    let lastTimeout;
 
-    if (lastTimeout) {
-        clearTimeout(lastTimeout)
+    let cityFragment = document.createDocumentFragment()
+
+    for (let city of filterCities) {
+        let divText = document.createElement('div')
+
+        divText.innerHTML = city.name;
+
+        cityFragment.appendChild(divText)
     }
-    lastTimeout = setTimeout(() => {
-        let cityFragment = document.createDocumentFragment()
-
-        for (let city of filterCities) {
-            let divText = document.createElement('div')
-
-            divText.innerHTML = city.name;
-
-            cityFragment.appendChild(divText)
-        }
-
-        filterResult.appendChild(cityFragment)        
-    }, 1000);
-    
+    filterResult.appendChild(cityFragment)
 });
 
 export {
