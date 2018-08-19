@@ -69,30 +69,30 @@ function loadTowns() {
         xhr.send(); 
     })
 }
-loadTowns().then(res => {
-    cities = res;
 
-    loadingBlock.style.display = 'none'
-    filterBlock.style.display = 'block'    
-}).catch(()=>{
-    loadingBlock.innerHTML = 'Не удалось загрузить города';
-    createBtn();
-    function createBtn() {
-        if (document.getElementById('replay')) {
+function loadTownsInit() {  
+    loadTowns().then(res => {
+        cities = res;
+
+        loadingBlock.style.display = 'none'
+        filterBlock.style.display = 'block'
+    }).catch(() => {
+        loadingBlock.innerHTML = 'Не удалось загрузить города';
+        createBtn();
+        function createBtn() {
+            if (document.getElementById('replay')) {
+                return;
+            }
+            let btn = document.createElement('BUTTON');
+
+            btn.id = 'replay'
+            btn.innerHTML = 'Повторить'
+            btn.addEventListener('click', loadTownsInit)
+            homeworkContainer.appendChild(btn);
+
             return;
         }
-        let btn = document.createElement('BUTTON');
-
-        btn.id = 'replay'
-        btn.innerHTML = 'Повторить'
-        btn.addEventListener('click', loadTownsInit)
-        homeworkContainer.appendChild(btn);
-
-        return;
-    }    
-})  
-function loadTownsInit() {  
-    loadTowns();
+    })  
 }
 loadTownsInit();
 /*
