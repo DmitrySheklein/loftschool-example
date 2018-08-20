@@ -47,6 +47,90 @@ filterNameInput.addEventListener('keyup', function() {
     // здесь можно обработать нажатия на клавиши внутри текстового поля для фильтрации cookie
 });
 
-addButton.addEventListener('click', () => {
+addButton.addEventListener('click', (evt) => {
+    evt.preventDefault()
     // здесь можно обработать нажатие на кнопку "добавить cookie"
+    let cookie = createCookie();
+
+    createTr(cookie.name, cookie.value)
 });
+
+function createCookie() {
+    const cookieName = addNameInput.value;
+    const cookieValue = addValueInput.value;
+    
+    document.cookie = `${cookieName}=${cookieValue}`
+
+    addNameInput.value = '';
+    addValueInput.value = '';
+
+    return { name: cookieName, value: cookieValue }
+}
+
+function createTr(cookieName, cookieValue) {
+    let tr = document.createElement('TR');
+    let tdCookieName = document.createElement('TD');
+    let tdCookieValue = document.createElement('TD');
+    let tdCookieDeletBtn = document.createElement('TD');
+    let deleteCookieBtn = document.createElement('BUTTON');
+
+    deleteCookieBtn.innerText = 'Удалить';
+    deleteCookieBtn.id = cookieName;
+    deleteCookieBtn.addEventListener('click', (evt)=>{
+        evt.preventDefault();
+        let cookieName = evt.target.id;
+
+        deleteCookie(cookieName);
+        document.getElementById(cookieName).remove()
+
+    })
+  
+    tdCookieName.innerText = cookieName;
+    tdCookieValue.innerText = cookieValue;
+    tdCookieDeletBtn.appendChild(deleteCookieBtn);
+
+    tr.appendChild(tdCookieName);
+    tr.appendChild(tdCookieValue);
+    tr.appendChild(tdCookieDeletBtn);
+
+    tr.id = cookieName;
+    listTable.appendChild(tr)
+}
+
+function getDefaultCookie() {
+    let defaultCookie = document.cookie.split('; ').reduce((prev, current)=>{
+        const [name, value] = current.split('=');
+      
+        prev[name] = value;
+
+        return prev;
+    }, {})  
+
+    return defaultCookie;
+}
+
+function deleteCookie(cookieName) {
+    let cookieDate = new Date(); 
+
+    cookieDate.setTime(cookieDate.getTime() - 1);
+    document.cookie = cookieName += '=; expires=' + cookieDate.toGMTString();
+}
+
+function isMatching(full, chunk) {
+    return (full.toLowerCase().indexOf(chunk.toLowerCase()) !== -1) ? true : false;
+}
+
+(()=>{
+    let cookieObj = getDefaultCookie();
+    
+    if (!cookieObj) {
+        return;
+    }
+
+    for (let cookie in cookieObj) {
+        if (cookieObj.hasOwnProperty(cookie)) {
+            createTr(cookie, cookieObj[cookie])
+        }
+    }
+    
+})()
