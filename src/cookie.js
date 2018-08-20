@@ -43,30 +43,62 @@ const addButton = homeworkContainer.querySelector('#add-button');
 // таблица со списком cookie
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
-filterNameInput.addEventListener('keyup', function() {
+filterNameInput.addEventListener('keyup', function(evt) {
     // здесь можно обработать нажатия на клавиши внутри текстового поля для фильтрации cookie
+    filterName(evt.target)
 });
+
+function filterName(input) {
+    let value = input.value;
+    let cookies = getDefaultCookie();
+
+    if (cookies) {
+        let filterCookiesName = [];
+
+        for (let cookie in cookies) {
+            if (isMatching(cookies[cookie], value) || isMatching(cookie, value)) {
+                filterCookiesName.push(cookie)
+            }
+        }
+        for (let tr of listTable.children) {
+            tr.style.display = 'none'
+        }
+        for (let trName of filterCookiesName) {
+            let tr = document.getElementById(trName);
+
+            tr.style.display = 'table-row'
+        }
+        
+    }
+}  
 
 addButton.addEventListener('click', (evt) => {
     evt.preventDefault()
     // здесь можно обработать нажатие на кнопку "добавить cookie"
-    let cookie = createCookie();
-
-    createTr(cookie.name, cookie.value)
+    createCookie();
 });
 
 function createCookie() {
     const cookieName = addNameInput.value;
     const cookieValue = addValueInput.value;
     
-    document.cookie = `${cookieName}=${cookieValue}`
+    if (!getDefaultCookie().hasOwnProperty(cookieName)) {
+        document.cookie = `${cookieName}=${cookieValue}`
+        createTr(cookieName, cookieValue);
+    } else {
+        document.cookie = `${cookieName}=${cookieValue}`
+        updateTr(cookieName, cookieValue);
+    }
 
     addNameInput.value = '';
-    addValueInput.value = '';
-
-    return { name: cookieName, value: cookieValue }
+    addValueInput.value = '';    
 }
+function updateTr(cookieName, cookieValue) {    
+    let tr = document.getElementById(cookieName);     
+    let tdCookieValue = tr.querySelector('.CookieValue');
 
+    tdCookieValue.innerText = cookieValue;
+}
 function createTr(cookieName, cookieValue) {
     let tr = document.createElement('TR');
     let tdCookieName = document.createElement('TD');
@@ -84,7 +116,8 @@ function createTr(cookieName, cookieValue) {
         document.getElementById(cookieName).remove()
 
     })
-  
+    tdCookieName.classList.add('CookieName');
+    tdCookieValue.classList.add('CookieValue');
     tdCookieName.innerText = cookieName;
     tdCookieValue.innerText = cookieValue;
     tdCookieDeletBtn.appendChild(deleteCookieBtn);
@@ -98,6 +131,10 @@ function createTr(cookieName, cookieValue) {
 }
 
 function getDefaultCookie() {
+    if (!document.cookie) {
+        return false;
+    }
+
     let defaultCookie = document.cookie.split('; ').reduce((prev, current)=>{
         const [name, value] = current.split('=');
       
@@ -122,15 +159,12 @@ function isMatching(full, chunk) {
 
 (()=>{
     let cookieObj = getDefaultCookie();
-    
-    if (!cookieObj) {
-        return;
-    }
 
-    for (let cookie in cookieObj) {
-        if (cookieObj.hasOwnProperty(cookie)) {
-            createTr(cookie, cookieObj[cookie])
+    if (cookieObj) {
+        for (let cookie in cookieObj) {
+            if (cookieObj.hasOwnProperty(cookie)) {
+                createTr(cookie, cookieObj[cookie])
+            }
         }
     }
-    
 })()
