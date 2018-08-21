@@ -81,17 +81,43 @@ addButton.addEventListener('click', (evt) => {
 function createCookie() {
     const cookieName = addNameInput.value;
     const cookieValue = addValueInput.value;
-    
-    if (!getDefaultCookie().hasOwnProperty(cookieName)) {
-        document.cookie = `${cookieName}=${cookieValue}`
-        createTr(cookieName, cookieValue);
-    } else {
-        document.cookie = `${cookieName}=${cookieValue}`
-        updateTr(cookieName, cookieValue);
-    }
+    const filterValue = filterNameInput.value;
 
     addNameInput.value = '';
-    addValueInput.value = '';    
+    addValueInput.value = '';  
+
+    if (!getDefaultCookie().hasOwnProperty(cookieName)) {
+        if (filterValue && (isMatching(cookieName, filterValue) || isMatching(cookieValue, filterValue))) {
+            createTr(cookieName, cookieValue);
+            console.log('filter true && isMathing');
+            
+        } else if (!filterValue) {
+            createTr(cookieName, cookieValue);
+            console.log('no filterValue');
+            
+        }
+    } else {
+        if (filterValue && (isMatching(cookieName, filterValue) || isMatching(cookieValue, filterValue))) {
+            updateTr(cookieName, cookieValue);
+            console.log('update && filter true');
+            
+        } else if (filterValue) {
+            createTr(cookieName, cookieValue);
+            removeTr(cookieName);           
+            console.log('cookie true && no filter');             
+        } else {
+            updateTr(cookieName, cookieValue);
+            console.log('update');
+            
+        }
+    }  
+    
+    document.cookie = `${cookieName}=${cookieValue}`
+}
+function removeTr(cookieName) {
+    let tr = document.getElementById(cookieName);
+
+    tr.style.display = 'none';
 }
 function updateTr(cookieName, cookieValue) {    
     let tr = document.getElementById(cookieName);     
