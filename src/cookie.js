@@ -90,28 +90,22 @@ function createCookie() {
     }
     if (!getDefaultCookie().hasOwnProperty(cookieName)) {
         if (filterValue && (isMatching(cookieName, filterValue) || isMatching(cookieValue, filterValue))) {
-            createTr(cookieName, cookieValue);
-            console.log('dafault[no] | filter true && isMathing');            
+            createTr(cookieName, cookieValue);          
         } else if (filterValue) {
             createTr(cookieName, cookieValue);
             removeTr(cookieName);           
-            console.log('dafault[no] | filter true && NOisMathing');
         } else {
             createTr(cookieName, cookieValue);
-            console.log('dafault[no] | noFilter');
         }
     } else {
         if (filterValue && (isMatching(cookieName, filterValue) || isMatching(cookieValue, filterValue))) {
             updateTr(cookieName, cookieValue);
-            console.log('dafault[yes] | filter true && isMathing');
             
         } else if (filterValue) {
             createTr(cookieName, cookieValue);
-            removeTr(cookieName);           
-            console.log('dafault[yes] | filter true && NOisMathing');             
+            removeTr(cookieName);                    
         } else {
             updateTr(cookieName, cookieValue);
-            console.log('dafault[yes] | noFilter');
             
         }
     }  
