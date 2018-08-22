@@ -57,14 +57,14 @@ function filterName(input) {
 
         for (let cookie in cookies) {
             if (isMatching(cookies[cookie], value) || isMatching(cookie, value)) {
-                filterCookiesName.push(cookie)
+                filterCookiesName.push({ name: cookie, value: cookies[cookie] })
             }
         }
         for (let tr of listTable.children) {
             tr.style.display = 'none'
         }
-        for (let trName of filterCookiesName) {
-            let tr = document.getElementById(trName);
+        for (let filterCookie of filterCookiesName) {
+            let tr = document.getElementById(filterCookie.name);
 
             tr.style.display = 'table-row'
         }
@@ -85,29 +85,33 @@ function createCookie() {
 
     addNameInput.value = '';
     addValueInput.value = '';  
-
+    if (!cookieName) {
+        return false;
+    }
     if (!getDefaultCookie().hasOwnProperty(cookieName)) {
         if (filterValue && (isMatching(cookieName, filterValue) || isMatching(cookieValue, filterValue))) {
             createTr(cookieName, cookieValue);
-            console.log('filter true && isMathing');
-            
-        } else if (!filterValue) {
+            console.log('dafault[no] | filter true && isMathing');            
+        } else if (filterValue) {
             createTr(cookieName, cookieValue);
-            console.log('no filterValue');
-            
+            removeTr(cookieName);           
+            console.log('dafault[no] | filter true && NOisMathing');
+        } else {
+            createTr(cookieName, cookieValue);
+            console.log('dafault[no] | noFilter');
         }
     } else {
         if (filterValue && (isMatching(cookieName, filterValue) || isMatching(cookieValue, filterValue))) {
             updateTr(cookieName, cookieValue);
-            console.log('update && filter true');
+            console.log('dafault[yes] | filter true && isMathing');
             
         } else if (filterValue) {
             createTr(cookieName, cookieValue);
             removeTr(cookieName);           
-            console.log('cookie true && no filter');             
+            console.log('dafault[yes] | filter true && NOisMathing');             
         } else {
             updateTr(cookieName, cookieValue);
-            console.log('update');
+            console.log('dafault[yes] | noFilter');
             
         }
     }  
