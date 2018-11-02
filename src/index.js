@@ -36,24 +36,11 @@ function map(array, fn) {
  */
 
 function reduce(array, fn, initial) {
-    var result;
+    var result = initial || array[0];
+    var i = initial ? 0 : 1;
 
-    if (typeof initial == 'undefined') {
-        for (let i = 1; i < array.length; i++) {   
-            if (i === 1) { 
-                result = fn(array[0], array[i], i, array);
-            } else {
-                result = fn(result, array[i], i, array);
-            }
-        }
-    } else {
-        for (let i = 0; i < array.length; i++) {
-            if (i === 0) {
-                result = fn(initial, array[i], i, array);
-            } else {
-                result = fn(result, array[i], i, array);
-            }
-        }
+    for (; i < array.length; i++) {
+        result = fn(result, array[i], i , array)        
     }
 
     return result;
