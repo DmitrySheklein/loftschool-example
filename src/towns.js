@@ -78,7 +78,7 @@ function loadTownsInit() {
         filterBlock.style.display = 'block'
     }).catch(() => {
         loadingBlock.innerHTML = 'Не удалось загрузить города';
-        createBtn();
+
         function createBtn() {
             if (document.getElementById('replay')) {
                 return;
@@ -89,9 +89,8 @@ function loadTownsInit() {
             btn.innerHTML = 'Повторить'
             btn.addEventListener('click', loadTownsInit)
             homeworkContainer.appendChild(btn);
-
-            return;
         }
+        createBtn();
     })  
 }
 loadTownsInit();
