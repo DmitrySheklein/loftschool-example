@@ -31,35 +31,26 @@ function delayPromise(seconds) {
  Пример:
    loadAndSortTowns().then(towns => console.log(towns)) // должна вывести в консоль отсортированный массив городов
  */
+
 function loadAndSortTowns() {
-    return new Promise((resolve, reject) => {
         const URL_LOAD = 'https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json';
-        let xhr = new XMLHttpRequest();
 
-        xhr.responseType = 'json';
+        return fetch(URL_LOAD)
+            .then(response => response.json())
+            .then((towns) => {
+                let sortTowns = towns.sort(function (a, b) {
+                    if (a.name > b.name) {
+                        return 1;
+                    }
+                    if (a.name < b.name) {
+                        return -1;
+                    }
+        
+                    return 0;
+                })
 
-        xhr.addEventListener('load', function () {
-            if (xhr.status > 400) {
-                reject();
-            }                
-            resolve(xhr.response.sort(function (a, b) {
-                if (a.name > b.name) {
-                    return 1;
-                }
-                if (a.name < b.name) {
-                    return -1;
-                }
-
-                return 0;
-            }));
-        });
-
-        xhr.addEventListener('error', () => reject());        
-        xhr.addEventListener('abort', () => reject());        
-
-        xhr.open('GET', URL_LOAD);
-        xhr.send();        
-    })
+                return sortTowns;
+            })             
 }
 
 export {
